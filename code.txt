@@ -1,0 +1,45 @@
+actor customer
+
+participant catalog
+participant product
+participant order
+actor seller
+
+
+
+
+loop Добавление товаров в заказ
+customer->catalog:search(name_of_product)
+activate customer
+catalog->product:choose_product
+
+product->order:add(amount_of_products,product)
+activate order
+end
+order->customer
+
+
+loop Если нужно удалить какие-либо продукты из заказ
+customer->order:delete(in amount_of_products, in product)
+end
+order->customer
+
+customer->order:choiceofaddress(in string address)
+order->customer
+
+customer->order:choose_payment_method(in payment_method)
+order->customer
+
+
+
+order->seller:payment_done()
+activate seller
+seller->order:mark_sent()
+order->seller
+seller->order:delivered()
+deactivate seller
+
+order->customer:received()
+deactivate order
+
+deactivate customer
